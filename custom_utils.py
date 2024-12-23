@@ -39,23 +39,19 @@ def api_screen(screen_id, marble_id, lap, time):
         # return None
 
 def identify_screen(text):
-  if "PRESSANY" in text and "BUTTON" in text:
-    return "SCREEN_START"
-  elif "CAREER" in text and "SETTINGS" in text:
-    return "SCREEN_MAIN_MENU"
-  elif "F10HELP" in text and "F2SETTINGSFILTER" in text:
-    return "SCREEN_SETTING_MENU"
-  elif "GRAPHICS SETTINGS" in text and "F2SETTINGSFILTER" in text:
-    return "SCREEN_GRAPHIC_SETTING"
-  elif "PLAY" in text and "CUSTOMISATION" in text:
-    return "SCREEN_WORLD_MENU"
-  elif "OFFLINE" in text and "GRAND PRIXTM" in text:
-    return "SCREEN_RACE_MENU"
-  elif "TEAM SELECT" in text and "ADVANCE" in text:
-    return "SCREEN_TEAM_SELECT"
-  elif "TIME TRIAL" in text and "SELECT EVENT" in text:
-    return "SCREEN_TRACK_SELECT"
-  else:
+    screens = {
+        "SCREEN_START": ("PRESSANY", "BUTTON"),
+        "SCREEN_MAIN_MENU": ("CAREER", "SETTINGS"),
+        "SCREEN_SETTING_MENU": ("F10HELP", "F2SETTINGSFILTER"),
+        "SCREEN_GRAPHIC_SETTING": ("GRAPHICS SETTINGS", "F2SETTINGSFILTER"),
+        "SCREEN_WORLD_MENU": ("PLAY", "CUSTOMISATION"),
+        "SCREEN_RACE_MENU": ("OFFLINE", "GRAND PRIXTM"),
+        "SCREEN_TEAM_SELECT": ("TEAM SELECT", "ADVANCE"),
+        "SCREEN_TRACK_SELECT": ("TIME TRIAL", "SELECT EVENT"),
+    }
+    for screen, words in screens.items():
+        if all(word in text for word in words):
+            return screen
     return "SCREEN_OTHER"
 
 def ocr_screen(img, ocr):
@@ -100,7 +96,7 @@ def ocr_screen(img, ocr):
                 # cv2.putText(img, text, (x0, y0 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
 
     screen_title = identify_screen(extracted_text)
-    cv2.putText(img, screen_title, (200, 500), cv2.FONT_HERSHEY_SIMPLEX, 3, (255, 255, 255), 2)
+    cv2.putText(img, screen_title, (100, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 3)
     
     cv2.imshow("Game Screen", img)
     cv2.waitKey(1)

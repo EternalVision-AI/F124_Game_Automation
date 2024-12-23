@@ -1,5 +1,6 @@
 import win32gui
 import win32ui
+import win32con
 from ctypes import windll
 from PIL import Image
 from custom_utils import ocr_screen, api_screen
@@ -21,6 +22,33 @@ def set_low_priority():
     except Exception as e:
         logging.error(f"Failed to set process priority: {e}")
 
+def activate_window(hwnd):
+    """
+    Activates (restores and brings to foreground) the specified window.
+    
+    Args:
+        hwnd (int): Handle to the window.
+    
+    Returns:
+        bool: True if the window was successfully activated, False otherwise.
+    """
+    try:
+        # Restore the window if it is minimized
+        win32gui.ShowWindow(hwnd, win32con.SW_RESTORE)
+        print(f"Window handle {hwnd} restored.")
+        
+        # Bring the window to the foreground
+        win32gui.SetForegroundWindow(hwnd)
+        print(f"Window handle {hwnd} brought to foreground.")
+        
+        # Optional: Wait briefly to ensure the window has time to restore
+        time.sleep(1)
+        
+        return True
+    except Exception as e:
+        print(f"Failed to activate window handle {hwnd}: {e}")
+        return False
+
 def capture_window(window_name):
     hwnd = win32gui.FindWindow(None, window_name)
     # Check if the window handle is valid
@@ -29,6 +57,10 @@ def capture_window(window_name):
         return None  # Exit the function if window is not found
     if win32gui.IsIconic(hwnd):
         print(f"Window '{window_name}' is minimized. Skipping capture.")
+        activated = activate_window(hwnd)
+        if not activated:
+            print(f"Could not activate window '{window_name}'. Skipping capture.")
+            return None  # Exit if activation failed
         return None
     # Uncomment the following line if you use a high DPI display or >100% scaling size
     # windll.user32.SetProcessDPIAware()
@@ -69,7 +101,7 @@ def capture_window(window_name):
         win32gui.ReleaseDC(hwnd, hwndDC)
         if result == 1:
             #PrintWindow Succeeded
-            img.save("test.png")
+            # img.save("test.png")
              # Ensure image is in RGB format
             img = img.convert('RGB')
             # Convert to NumPy array
