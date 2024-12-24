@@ -206,6 +206,7 @@ if __name__ == "__main__":
     window_name = 'Everything'
     # window_name = 'Counter-Strike'
     window_name = 'F1® 24'
+    window_name = "1.png ‎- Paint 3D"
     set_low_priority()
     ocr = PaddleOCR(use_angle_cls=True, lang='en', use_gpu=True)  # Enable GPU if available
     while True:    
