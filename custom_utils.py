@@ -96,10 +96,11 @@ def ocr_screen(img, ocr):
                 # cv2.putText(img, text, (x0, y0 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
 
     screen_title = identify_screen(extracted_text)
+    print(screen_title)
     cv2.putText(img, screen_title, (100, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 3)
     
-    cv2.imshow("Game Screen", img)
-    cv2.waitKey(1)
+    # cv2.imshow("Game Screen", img)
+    # cv2.waitKey(1)
     # return True
 
 

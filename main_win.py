@@ -1,6 +1,8 @@
 import win32gui
 import win32ui
 import win32con
+import win32api
+import mss
 from ctypes import windll
 from PIL import Image
 from custom_utils import ocr_screen, api_screen
@@ -22,6 +24,88 @@ def set_low_priority():
     except Exception as e:
         logging.error(f"Failed to set process priority: {e}")
 
+def set_windowed_mode(window_title):
+    # Find the window handle based on the window title
+    hwnd = win32gui.FindWindow(None, window_title)
+    
+    if hwnd == 0:
+        print(f"Error: Window '{window_title}' not found.")
+        return False
+    
+    print(f"Window '{window_title}' found with handle: {hwnd}")
+    
+    # Check if the window is minimized
+    if win32gui.IsIconic(hwnd):
+        print(f"Window '{window_title}' is minimized. Restoring window.")
+        win32gui.ShowWindow(hwnd, win32con.SW_RESTORE)
+        time.sleep(1)  # Wait for the window to restore
+    
+    # Get the current window rectangle
+    rect = win32gui.GetWindowRect(hwnd)
+    width = rect[2] - rect[0]
+    height = rect[3] - rect[1]
+    print(f"Original window size: {width}x{height}")
+    
+    # Get the current window style
+    style = win32gui.GetWindowLong(hwnd, win32con.GWL_STYLE)
+    print(f"Original window style: {style}")
+    
+    # Modify the style to remove fullscreen attributes
+    style &= ~win32con.WS_POPUP
+    style |= win32con.WS_OVERLAPPEDWINDOW
+    print(f"Modified window style: {style}")
+    
+    win32gui.SetWindowLong(hwnd, win32con.GWL_STYLE, style)
+    
+    # Optional: Make the window topmost temporarily
+    win32gui.SetWindowPos(
+        hwnd,
+        win32con.HWND_TOPMOST,
+        0,
+        0,
+        0,
+        0,
+        win32con.SWP_NOMOVE | win32con.SWP_NOSIZE
+    )
+    
+    # Get the monitor info to center the window
+    monitor = win32api.MonitorFromWindow(hwnd)
+    monitor_info = win32api.GetMonitorInfo(monitor)
+    monitor_area = monitor_info['Monitor']
+    monitor_width = monitor_area[2] - monitor_area[0]
+    monitor_height = monitor_area[3] - monitor_area[1]
+    
+    # Calculate position to center the window
+    x = monitor_area[0] + (monitor_width - width) // 2
+    y = monitor_area[1] + (monitor_height - height) // 2
+    
+    print(f"Setting window position to ({x}, {y}) with size ({width}x{height})")
+    
+    # Resize and reposition the window
+    win32gui.SetWindowPos(
+        hwnd,
+        None,
+        x,
+        y,
+        width,
+        height,
+        win32con.SWP_NOZORDER | win32con.SWP_FRAMECHANGED
+    )
+    
+    # Remove the topmost flag
+    win32gui.SetWindowPos(
+        hwnd,
+        win32con.HWND_NOTOPMOST,
+        x,
+        y,
+        width,
+        height,
+        win32con.SWP_NOZORDER | win32con.SWP_FRAMECHANGED
+    )
+    
+    print(f"Window '{window_title}' set to windowed mode.")
+    return True
+
 def activate_window(hwnd):
     """
     Activates (restores and brings to foreground) the specified window.
@@ -34,7 +118,7 @@ def activate_window(hwnd):
     """
     try:
         # Restore the window if it is minimized
-        win32gui.ShowWindow(hwnd, win32con.SW_RESTORE)
+        # win32gui.ShowWindow(hwnd, win32con.SW_RESTORE)
         print(f"Window handle {hwnd} restored.")
         
         # Bring the window to the foreground
@@ -57,11 +141,11 @@ def capture_window(window_name):
         return None  # Exit the function if window is not found
     if win32gui.IsIconic(hwnd):
         print(f"Window '{window_name}' is minimized. Skipping capture.")
-        activated = activate_window(hwnd)
-        if not activated:
-            print(f"Could not activate window '{window_name}'. Skipping capture.")
-            return None  # Exit if activation failed
-        return None
+        # activated = set_windowed_mode(window_name)
+        # if not activated:
+        #     print(f"Could not activate window '{window_name}'. Skipping capture.")
+        #     return None  # Exit if activation failed
+        # return None
     # Uncomment the following line if you use a high DPI display or >100% scaling size
     # windll.user32.SetProcessDPIAware()
 
@@ -101,7 +185,7 @@ def capture_window(window_name):
         win32gui.ReleaseDC(hwnd, hwndDC)
         if result == 1:
             #PrintWindow Succeeded
-            # img.save("test.png")
+            img.save("test.png")
              # Ensure image is in RGB format
             img = img.convert('RGB')
             # Convert to NumPy array
@@ -119,7 +203,9 @@ def capture_window(window_name):
 
 
 if __name__ == "__main__":
-    window_name = 'LDPlayer'
+    window_name = 'Everything'
+    # window_name = 'Counter-Strike'
+    window_name = 'F1® 24'
     set_low_priority()
     ocr = PaddleOCR(use_angle_cls=True, lang='en', use_gpu=True)  # Enable GPU if available
     while True:    
