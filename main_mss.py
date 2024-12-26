@@ -5,6 +5,9 @@ import win32gui
 import win32ui
 import time
 from contextlib import contextmanager
+from paddleocr import PaddleOCR
+
+from custom_utils import ocr_screen
 
 @contextmanager
 def gdi_resource_management(hwnd):
@@ -26,7 +29,13 @@ def gdi_resource_management(hwnd):
 def capture_win_alt(window_name: str):
     windll.user32.SetProcessDPIAware()
     hwnd = win32gui.FindWindow(None, window_name)
-
+    if hwnd == 0:
+        print(f"Window '{window_name}' not found. Skipping capture.")
+        return None  # Exit the function if window is not found
+    if win32gui.IsIconic(hwnd):
+        print(f"Window '{window_name}' is minimized. Skipping capture.")
+        return None
+    
     left, top, right, bottom = win32gui.GetClientRect(hwnd)
     w = right - left
     h = bottom - top
@@ -47,13 +56,25 @@ def capture_win_alt(window_name: str):
 
     img = np.frombuffer(bmpstr, dtype=np.uint8).reshape((bmpinfo["bmHeight"], bmpinfo["bmWidth"], 4))
     img = np.ascontiguousarray(img)[..., :-1]  # make image C_CONTIGUOUS and drop alpha channel
-    cv2.imwrite("test.png", img)
+    # cv2.imwrite("test.png", img)
     return img
 
-while True:
-    # capture_win_alt("general (Channel) - Imagine API Support - Slack")
+def capture_and_process_image(window_name, img_count, ocr):
+    img = capture_win_alt(window_name)
+    if img is not None:
+        processed_img = ocr_screen(img, ocr)
+        if processed_img is not None:
+            cv2.imwrite(f"screen_images/{img_count}.png", processed_img)
+    return img_count + 1
+
+def main():
+    img_count = 1
+    ocr = PaddleOCR(use_angle_cls=True, lang='en', use_gpu=True)  # Enable GPU if available
     window_name = 'F1® 24'
-    window_name = "1.png* ‎- Paint 3D"
-    
-    capture_win_alt(window_name)
-    time.sleep(0.1)
+    # window_name = "1.png* ‎- Paint 3D"
+    while True:
+        img_count = capture_and_process_image(window_name, img_count, ocr)
+        time.sleep(2)
+
+if __name__ == "__main__":
+    main()

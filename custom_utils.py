@@ -56,8 +56,8 @@ def identify_screen(text):
 
 def ocr_screen(img, ocr):
     if img is None:
-        print(f"Failed to read image: {image_path}")
-        return False
+        print(f"Failed to read image: {img}")
+        return None
 
     extracted_text = []
     # Perform OCR
@@ -97,31 +97,14 @@ def ocr_screen(img, ocr):
 
     screen_title = identify_screen(extracted_text)
     print(screen_title)
-    cv2.putText(img, screen_title, (100, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 3)
+    # Attempt to make the image writable
+    if not img.flags.writeable:
+        writable_img = img.copy()
+    else:
+        writable_img = img
+    cv2.putText(writable_img, screen_title, (100, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 3)
     
     # cv2.imshow("Game Screen", img)
     # cv2.waitKey(1)
     # return True
-
-
-def process_images_in_folder(input_folder):
-    # Ensure the input folder exists
-    if not os.path.exists(input_folder):
-        print(f"Input folder '{input_folder}' does not exist.")
-        return
-
-    # Process each image file in the folder
-    for image_file in os.listdir(input_folder):
-        # Check if the file is an image (basic check by extension)
-        if not image_file.lower().endswith(('.png', '.jpg', '.jpeg', '.bmp', '.tiff')):
-            continue
-
-        image_path = os.path.join(input_folder, image_file)
-        img = cv2.imread(image_path)
-        success = ocr_screen(img)
-        if not success:
-            print(f"Skipping file: {image_file} due to read errors.")
-
-
-# Example usage:
-# process_images_in_folder('./images')
+    return writable_img
