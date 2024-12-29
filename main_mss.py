@@ -69,7 +69,22 @@ def capture_and_process_image(window_name, img_count, ocr):
 
 def main():
     img_count = 1
-    ocr = PaddleOCR(use_angle_cls=True, lang='en', use_gpu=True)  # Enable GPU if available
+    # Initialize OCR
+    ocr = PaddleOCR(
+        lang="en",
+        use_gpu=True,
+        cpu_threads=12,
+        enable_mkldnn=True,
+        det_db_score_mode="slow",  # Use slow mode for better accuracy
+        use_angle_cls=True,  # Enable angle classification
+        det_limit_side_len=5880,  # Increase detection size limit
+        det_db_box_thresh=0.1,  # Lower threshold to detect more text
+        det_db_thresh=0.1,  # Lower threshold for text detection
+        rec_batch_num=16,  # Increase batch size for recognition
+        det_db_unclip_ratio=2,  # Increase unclip ratio to expand text regions
+        max_text_length=200,
+        drop_score=0.1,
+    )
     window_name = 'F1® 24'
     # window_name = "1.png* ‎- Paint 3D"
     while True:

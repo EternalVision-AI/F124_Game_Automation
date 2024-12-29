@@ -42,10 +42,10 @@ def identify_screen(text):
     screens = {
         "SCREEN_START": ("PRESSANY", "BUTTON"),
         "SCREEN_MAIN_MENU": ("CAREER", "SETTINGS"),
-        "SCREEN_SETTING_MENU": ("F10HELP", "F2SETTINGSFILTER"),
-        "SCREEN_GRAPHIC_SETTING": ("GRAPHICS SETTINGS", "F2SETTINGSFILTER"),
+        "SCREEN_SETTING_MENU": ("HELP", "SETTINGS"),
+        "SCREEN_GRAPHIC_SETTING": ("GRAPHICS SETTINGS", "visual"),
         "SCREEN_WORLD_MENU": ("PLAY", "CUSTOMISATION"),
-        "SCREEN_RACE_MENU": ("OFFLINE", "GRAND PRIXTM"),
+        "SCREEN_RACE_MENU": ("BACK", "OFFLINE"),
         "SCREEN_TEAM_SELECT": ("TEAM SELECT", "ADVANCE"),
         "SCREEN_TRACK_SELECT": ("TIME TRIAL", "SELECT EVENT"),
     }
@@ -90,21 +90,22 @@ def ocr_screen(img, ocr):
                 color = tuple(np.random.randint(0, 255, 3).tolist())
                 
                 # Draw rectangle around text
-                # cv2.rectangle(img, (x0, y0), (x1, y1), color, 2)
+                cv2.rectangle(img, (x0, y0), (x1, y1), color, 2)
                 
                 # Put text above the rectangle
                 # cv2.putText(img, text, (x0, y0 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
-
-    screen_title = identify_screen(extracted_text)
+    result_str = " ".join(extracted_text)
+    print(result_str)
+    screen_title = identify_screen(result_str)
     print(screen_title)
     # Attempt to make the image writable
     if not img.flags.writeable:
         writable_img = img.copy()
     else:
         writable_img = img
-    cv2.putText(writable_img, screen_title, (100, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 3)
+    cv2.putText(writable_img, screen_title, (300, 300), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 3)
     
-    # cv2.imshow("Game Screen", img)
-    # cv2.waitKey(1)
+    # cv2.imshow("Game Screen", cv2.resize(writable_img, (800, 600)))
+    # cv2.waitKey(0)
     # return True
     return writable_img
