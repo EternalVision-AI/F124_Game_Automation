@@ -87,25 +87,25 @@ def ocr_screen(img, ocr):
                 y1 = int(y1)
     
                 # Generate a random color for each rectangle
-                color = tuple(np.random.randint(0, 255, 3).tolist())
+                # color = tuple(np.random.randint(0, 255, 3).tolist())
                 
                 # Draw rectangle around text
-                cv2.rectangle(img, (x0, y0), (x1, y1), color, 2)
+                # cv2.rectangle(img, (x0, y0), (x1, y1), color, 2)
                 
                 # Put text above the rectangle
                 # cv2.putText(img, text, (x0, y0 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
     result_str = " ".join(extracted_text)
     print(result_str)
     screen_title = identify_screen(result_str)
-    print(screen_title)
     # Attempt to make the image writable
-    if not img.flags.writeable:
-        writable_img = img.copy()
-    else:
-        writable_img = img
-    cv2.putText(writable_img, screen_title, (300, 300), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 3)
+    # if not img.flags.writeable:
+    #     writable_img = img.copy()
+    # else:
+    #     writable_img = img
+    # cv2.putText(writable_img, screen_title, (300, 300), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 3)
     
     # cv2.imshow("Game Screen", cv2.resize(writable_img, (800, 600)))
     # cv2.waitKey(0)
     # return True
-    return writable_img
+    # return writable_img, screen_title
+    return None, screen_title

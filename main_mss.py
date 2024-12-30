@@ -4,6 +4,7 @@ from ctypes import windll
 import win32gui
 import win32ui
 import time
+from threading import Thread
 from contextlib import contextmanager
 from paddleocr import PaddleOCR
 
@@ -62,34 +63,54 @@ def capture_win_alt(window_name: str):
 def capture_and_process_image(window_name, img_count, ocr):
     img = capture_win_alt(window_name)
     if img is not None:
-        processed_img = ocr_screen(img, ocr)
-        if processed_img is not None:
-            cv2.imwrite(f"screen_images/{img_count}.png", processed_img)
+        _, screen_title = ocr_screen(img, ocr)
+        print("----------------------------------------------------------")
+        print(screen_title)
+        # if processed_img is not None:
+        #     cv2.imwrite(f"screen_images/{img_count}.png", processed_img)
     return img_count + 1
 
-def main():
+import psutil
+import time
+
+# Start monitoring resources
+start_time = time.time()
+process = psutil.Process()
+
+def monitor_game(window_name, ocr):
     img_count = 1
-    # Initialize OCR
+    while True:
+        img_count = capture_and_process_image(window_name, img_count, ocr)
+        
+        cpu_percent = process.cpu_percent(interval=1)
+        memory_info = process.memory_info()
+        print(f"CPU Usage: {cpu_percent}%")
+        print(f"Memory Usage: {memory_info.rss / (1024 * 1024):.2f} MB")
+        print("----------------------------------------------------------")
+        time.sleep(2)
+
+def main():
     ocr = PaddleOCR(
         lang="en",
-        use_gpu=True,
-        cpu_threads=12,
+        use_gpu=False,
+        cpu_threads=6,  # Reduced threads to avoid excessive resource consumption
         enable_mkldnn=True,
         det_db_score_mode="slow",  # Use slow mode for better accuracy
-        use_angle_cls=True,  # Enable angle classification
+        use_angle_cls=False,  # Enable angle classification
         det_limit_side_len=5880,  # Increase detection size limit
         det_db_box_thresh=0.1,  # Lower threshold to detect more text
         det_db_thresh=0.1,  # Lower threshold for text detection
-        rec_batch_num=16,  # Increase batch size for recognition
+        rec_batch_num=4,  # Increase batch size for recognition
         det_db_unclip_ratio=2,  # Increase unclip ratio to expand text regions
-        max_text_length=200,
+        max_text_length=100,
         drop_score=0.1,
     )
     window_name = 'F1® 24'
-    # window_name = "1.png* ‎- Paint 3D"
-    while True:
-        img_count = capture_and_process_image(window_name, img_count, ocr)
-        time.sleep(2)
+    window_name = '(13).png'
+    # Start monitoring in a separate thread
+    game_thread = Thread(target=monitor_game, args=(window_name, ocr))
+    game_thread.start()
+    game_thread.join()
 
 if __name__ == "__main__":
     main()
