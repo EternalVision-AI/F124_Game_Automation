@@ -7,8 +7,9 @@ import time
 from threading import Thread
 from contextlib import contextmanager
 from paddleocr import PaddleOCR
+import pytesseract
 
-from custom_utils import ocr_screen
+from custom_utils import ocr_screen, identify_screen
 
 @contextmanager
 def gdi_resource_management(hwnd):
@@ -26,7 +27,14 @@ def gdi_resource_management(hwnd):
         save_dc.DeleteDC()
         mfc_dc.DeleteDC()
         win32gui.ReleaseDC(hwnd, hwnd_dc)
-        
+   
+def preprocess_image(image):
+    # resized_image = cv2.resize(image, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    # threshold = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
+    return gray
+   
+     
 def capture_win_alt(window_name: str):
     windll.user32.SetProcessDPIAware()
     hwnd = win32gui.FindWindow(None, window_name)
@@ -63,11 +71,15 @@ def capture_win_alt(window_name: str):
 def capture_and_process_image(window_name, img_count, ocr):
     img = capture_win_alt(window_name)
     if img is not None:
-        _, screen_title = ocr_screen(img, ocr)
+        extracted_text = pytesseract.image_to_string(preprocess_image(img), lang='eng')
+        print(extracted_text)
+        extracted_text = extracted_text.upper()
+        screen_title = identify_screen(extracted_text)
+        # _, screen_title = ocr_screen(img, ocr)
         print("----------------------------------------------------------")
         print(screen_title)
-        # if processed_img is not None:
-        #     cv2.imwrite(f"screen_images/{img_count}.png", processed_img)
+        if img is not None:
+            cv2.imwrite(f"screen_images/{img_count}_{screen_title}.png", img)
     return img_count + 1
 
 import psutil
@@ -90,25 +102,25 @@ def monitor_game(window_name, ocr):
         time.sleep(2)
 
 def main():
-    ocr = PaddleOCR(
-        lang="en",
-        use_gpu=False,
-        cpu_threads=6,  # Reduced threads to avoid excessive resource consumption
-        enable_mkldnn=True,
-        det_db_score_mode="slow",  # Use slow mode for better accuracy
-        use_angle_cls=False,  # Enable angle classification
-        det_limit_side_len=5880,  # Increase detection size limit
-        det_db_box_thresh=0.1,  # Lower threshold to detect more text
-        det_db_thresh=0.1,  # Lower threshold for text detection
-        rec_batch_num=4,  # Increase batch size for recognition
-        det_db_unclip_ratio=2,  # Increase unclip ratio to expand text regions
-        max_text_length=100,
-        drop_score=0.1,
-    )
+    # ocr = PaddleOCR(
+    #     lang="en",
+    #     use_gpu=False,
+    #     cpu_threads=6,  # Reduced threads to avoid excessive resource consumption
+    #     enable_mkldnn=True,
+    #     det_db_score_mode="slow",  # Use slow mode for better accuracy
+    #     use_angle_cls=False,  # Enable angle classification
+    #     det_limit_side_len=5880,  # Increase detection size limit
+    #     det_db_box_thresh=0.1,  # Lower threshold to detect more text
+    #     det_db_thresh=0.1,  # Lower threshold for text detection
+    #     rec_batch_num=4,  # Increase batch size for recognition
+    #     det_db_unclip_ratio=2,  # Increase unclip ratio to expand text regions
+    #     max_text_length=100,
+    #     drop_score=0.1,
+    # )
     window_name = 'F1® 24'
-    window_name = '(13).png'
+    # window_name = '(13).png'
     # Start monitoring in a separate thread
-    game_thread = Thread(target=monitor_game, args=(window_name, ocr))
+    game_thread = Thread(target=monitor_game, args=(window_name, None))
     game_thread.start()
     game_thread.join()
 

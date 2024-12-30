@@ -41,11 +41,11 @@ def api_screen(screen_id, marble_id, lap, time):
 def identify_screen(text):
     screens = {
         "SCREEN_START": ("PRESSANY", "BUTTON"),
-        "SCREEN_MAIN_MENU": ("CAREER", "SETTINGS"),
+        "SCREEN_MAIN_MENU": ("LEAGUE", "THEATRE"),
         "SCREEN_SETTING_MENU": ("HELP", "SETTINGS"),
-        "SCREEN_GRAPHIC_SETTING": ("GRAPHICS SETTINGS", "visual"),
-        "SCREEN_WORLD_MENU": ("PLAY", "CUSTOMISATION"),
-        "SCREEN_RACE_MENU": ("BACK", "OFFLINE"),
+        "SCREEN_GRAPHIC_SETTING": ("GRAPHICS SETTINGS", "ADVANCED SETUP"),
+        "SCREEN_WORLD_MENU": ("TROPHIES", "CUSTOMISATION"),
+        "SCREEN_RACE_MENU": ("TIME", "CONNECTION"),
         "SCREEN_TEAM_SELECT": ("TEAM SELECT", "ADVANCE"),
         "SCREEN_TRACK_SELECT": ("TIME TRIAL", "SELECT EVENT"),
     }
