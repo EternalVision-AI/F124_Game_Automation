@@ -4,16 +4,18 @@ import cv2
 import numpy as np
 import requests
 
-def api_screen(screen_id, marble_id, lap, time):
+import os
+import cv2
+import numpy as np
+import requests
+
+def api_screen(screen_id):
     # URL of the API endpoint
-    url = "https://p1su5ofsta.execute-api.me-south-1.amazonaws.com/dev?action=raceLive"
+    url = "https://127.0.0.1/api/screenstatus"
     
     # Payload data
     payload = {
-        "screen_id": screen_id,
-        "marble_id": marble_id,
-        "lap": lap,
-        "time": time
+        "screen_id": screen_id
     }
     
     # Set headers (optional; include if required by your API)
@@ -53,59 +55,3 @@ def identify_screen(text):
         if all(word in text for word in words):
             return screen
     return "SCREEN_OTHER"
-
-def ocr_screen(img, ocr):
-    if img is None:
-        print(f"Failed to read image: {img}")
-        return None
-
-    extracted_text = []
-    # Perform OCR
-    result = ocr.ocr(img, cls=True)
-
-    # Draw rectangles and text if result is not None
-    if result is not None:
-        for line in result:
-            if not line:
-                continue
-            for word_info in line:
-                # word_info is typically [ [ [x0, y0], [x1, y1], [x2, y2], [x3, y3] ], ("text", confidence_score) ]
-                if len(word_info) < 2:
-                    continue  # Skip incomplete word info
-
-                box, (text, score) = word_info
-                if len(box) < 4:
-                    continue  # Skip incomplete bounding box info
-                # Append text to the list
-                extracted_text.append(text)
-                # Coordinates of top-left and bottom-right corners
-                x0, y0 = box[0]
-                x1, y1 = box[2]
-                x0 = int(x0)
-                y0 = int(y0)
-                x1 = int(x1)
-                y1 = int(y1)
-    
-                # Generate a random color for each rectangle
-                # color = tuple(np.random.randint(0, 255, 3).tolist())
-                
-                # Draw rectangle around text
-                # cv2.rectangle(img, (x0, y0), (x1, y1), color, 2)
-                
-                # Put text above the rectangle
-                # cv2.putText(img, text, (x0, y0 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
-    result_str = " ".join(extracted_text)
-    print(result_str)
-    screen_title = identify_screen(result_str)
-    # Attempt to make the image writable
-    # if not img.flags.writeable:
-    #     writable_img = img.copy()
-    # else:
-    #     writable_img = img
-    # cv2.putText(writable_img, screen_title, (300, 300), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 3)
-    
-    # cv2.imshow("Game Screen", cv2.resize(writable_img, (800, 600)))
-    # cv2.waitKey(0)
-    # return True
-    # return writable_img, screen_title
-    return None, screen_title
