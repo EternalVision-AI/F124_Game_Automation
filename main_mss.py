@@ -103,7 +103,6 @@ def monitor_game(window_name, ocr):
 
 def main():
     window_name = 'F1® 24'
-    window_name = '(13).png'
     # Start monitoring in a separate thread
     game_thread = Thread(target=monitor_game, args=(window_name, None))
     game_thread.start()
