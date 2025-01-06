@@ -29,11 +29,23 @@ pip install -r requirements.txt
 
 ### 2. Run the Tesseract Installer
 - Launch the downloaded installer.
-- Follow the on-screen instructions. When prompted, make sure to select the option to "Add Tesseract to the system PATH".
 - Complete the installation.
 
-## Completion
-- You have now successfully installed Python, set up your Python environment with required packages, and installed Tesseract OCR with the necessary system configuration. You are ready to start using your setup for development.
+### 3. Add Tesseract OCR Installation Directory to Your System PATH
+#### - Find the Installation Directory
+- Tesseract is typically installed in a directory like `C:\Program Files\Tesseract-OCR` or a similar path.
+
+#### - Add the Directory to System PATH
+- Open the Start Search by clicking the Start button or pressing `Win`.
+- Type `env` or `environment variables` and select "Edit the system environment variables" or "Edit environment variables for your account".
+- Click on the "Environment Variables..." button.
+- Find the `Path` variable under "System variables" or "User variables". Select it and click "Edit...".
+- Click "New" and enter the path to the Tesseract installation directory.
+- Click "OK" to close all dialogs.
+
+#### - Verify the Change
+- Open a new command prompt.
+- Type `tesseract --version` and press `Enter`. You should see the version information if Tesseract is correctly added to your PATH.
 
 ## Step 4: Run the Script
 ### 1. Launch the F124 Game
