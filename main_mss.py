@@ -8,7 +8,9 @@ from threading import Thread
 from contextlib import contextmanager
 from paddleocr import PaddleOCR
 import pytesseract
-
+import psutil
+import time
+import os
 from custom_utils import identify_screen, api_screen
 
 @contextmanager
@@ -82,8 +84,7 @@ def capture_and_process_image(window_name, img_count, ocr):
             cv2.imwrite(f"screen_images/{img_count}_{screen_title}.png", img)
     return img_count + 1
 
-import psutil
-import time
+
 
 # Start monitoring resources
 start_time = time.time()
