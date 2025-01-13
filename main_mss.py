@@ -6,7 +6,6 @@ import win32ui
 import time
 from threading import Thread
 from contextlib import contextmanager
-from paddleocr import PaddleOCR
 import pytesseract
 import psutil
 import time

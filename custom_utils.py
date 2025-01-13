@@ -1,5 +1,4 @@
 import os
-from paddleocr import PaddleOCR
 import cv2
 import numpy as np
 import requests
@@ -50,6 +49,7 @@ def identify_screen(text):
         "SCREEN_RACE_MENU": ("TIME", "CONNECTION"),
         "SCREEN_TEAM_SELECT": ("TEAM SELECT", "ADVANCE"),
         "SCREEN_TRACK_SELECT": ("TIME TRIAL", "SELECT EVENT"),
+        "SCREEN_TRACK_SELECT_GRANDPRIX": ("CUSTOM CHAMPIONSHIP", "ROUND"),
     }
     for screen, words in screens.items():
         if all(word in text for word in words):
