@@ -24,15 +24,15 @@ def api_screen(screen_id):
     
     try:
         # Send the POST request
-        response = requests.post(url, json=payload, headers=headers)
+        response = requests.post(url, json=payload, headers=headers, verify=False)
         
         # Check if the request was successful
         if response.status_code == 200:
-            print(f"Request: {screen_id, marble_id, lap, time} successful!")
+            print(f"Request: {screen_id} successful!")
             print(f"{response.text}")
             # return r  # Returns the JSON response
         else:
-            print(f"Request: {screen_id, marble_id, lap, time} failed with status code:", response.status_code)
+            print(f"Request: {screen_id} failed with status code:", response.status_code)
             print("Error:", response.text)
             # return None  # Return None in case of failure
     except requests.RequestException as e:
