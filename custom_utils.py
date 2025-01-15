@@ -10,7 +10,7 @@ import requests
 
 def api_screen(screen_id):
     # URL of the API endpoint
-    url = "https://127.0.0.1/api/screenstatus"
+    url = "http://127.0.0.1:5000/api/screenstatus"
     
     # Payload data
     payload = {
