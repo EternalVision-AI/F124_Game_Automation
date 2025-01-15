@@ -1,16 +1,24 @@
+import json
 import os
 import cv2
 import numpy as np
 import requests
 
-import os
-import cv2
-import numpy as np
-import requests
+# Function to load configuration from the JSON file
+def load_config(config_path='config.json'):
+    with open(config_path, 'r') as config_file:
+        config_data = json.load(config_file)
+    return config_data
+
+# Load configuration from JSON file
+config = load_config('config.json')  # You can replace the filename if needed
+
+# Get values from the config file
+port = config['port_send']
 
 def api_screen(screen_id):
     # URL of the API endpoint
-    url = "http://127.0.0.1:5000/api/screenstatus"
+    url = f"http://127.0.0.1:{port}/api/screenstatus"
     
     # Payload data
     payload = {
