@@ -58,6 +58,7 @@ def identify_screen(text):
         "SCREEN_TEAM_SELECT": ("TEAM SELECT", "ADVANCE"),
         "SCREEN_TRACK_SELECT": ("TIME TRIAL", "SELECT EVENT"),
         "SCREEN_TRACK_SELECT_GRANDPRIX": ("CUSTOM CHAMPIONSHIP", "ROUND"),
+        "SCREEN_NO_NETWORK": ("NO NETWORK", "SIGNED IN"),
     }
     for screen, words in screens.items():
         if all(word in text for word in words):
