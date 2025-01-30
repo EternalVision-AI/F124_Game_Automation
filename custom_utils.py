@@ -49,7 +49,7 @@ def api_screen(screen_id):
 
 def identify_screen(text):
     screens = {
-        "SCREEN_START": ("MMM"),
+        "SCREEN_START": ("MMM", "OMS"),
         "SCREEN_MAIN_MENU": ("LEAGUE", "THEATRE"),
         "SCREEN_SETTING_MENU": ("HELP", "SETTINGS"),
         "SCREEN_GRAPHIC_SETTING": ("GRAPHICS SETTINGS", "ADVANCED SETUP"),
