@@ -49,7 +49,7 @@ def api_screen(screen_id):
 
 def identify_screen(text):
     screens = {
-        "SCREEN_START": ("PRESSANY", "BUTTON"),
+        "SCREEN_START": ("MMM"),
         "SCREEN_MAIN_MENU": ("LEAGUE", "THEATRE"),
         "SCREEN_SETTING_MENU": ("HELP", "SETTINGS"),
         "SCREEN_GRAPHIC_SETTING": ("GRAPHICS SETTINGS", "ADVANCED SETUP"),
@@ -59,6 +59,7 @@ def identify_screen(text):
         "SCREEN_TRACK_SELECT": ("TIME TRIAL", "SELECT EVENT"),
         "SCREEN_TRACK_SELECT_GRANDPRIX": ("CUSTOM CHAMPIONSHIP", "ROUND"),
         "SCREEN_NO_NETWORK": ("NO NETWORK", "SIGNED IN"),
+        "SCREEN_CONFIRM_CHANGE": ("CONFIRM", "CHANGES"),
     }
     for screen, words in screens.items():
         if all(word in text for word in words):
