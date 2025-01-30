@@ -11,7 +11,8 @@ def load_config(config_path='config.json'):
     return config_data
 
 # Load configuration from JSON file
-config = load_config('config.json')  # You can replace the filename if needed
+config = load_config('config.json') 
+screens = load_config('screen_config.json') 
 
 # Get values from the config file
 port = config['port_send']
@@ -48,19 +49,7 @@ def api_screen(screen_id):
         # return None
 
 def identify_screen(text):
-    screens = {
-        "SCREEN_START": ("MMM", "OMS"),
-        "SCREEN_MAIN_MENU": ("LEAGUE", "THEATRE"),
-        "SCREEN_SETTING_MENU": ("HELP", "SETTINGS"),
-        "SCREEN_GRAPHIC_SETTING": ("GRAPHICS SETTINGS", "ADVANCED SETUP"),
-        "SCREEN_WORLD_MENU": ("TROPHIES", "CUSTOMISATION"),
-        "SCREEN_RACE_MENU": ("TIME", "CONNECTION"),
-        "SCREEN_TEAM_SELECT": ("TEAM SELECT", "ADVANCE"),
-        "SCREEN_TRACK_SELECT": ("TIME TRIAL", "SELECT EVENT"),
-        "SCREEN_TRACK_SELECT_GRANDPRIX": ("CUSTOM CHAMPIONSHIP", "ROUND"),
-        "SCREEN_NO_NETWORK": ("NO NETWORK", "SIGNED IN"),
-        "SCREEN_CONFIRM_CHANGE": ("CONFIRM", "CHANGES"),
-    }
+
     for screen, words in screens.items():
         if all(word in text for word in words):
             return screen
