@@ -112,7 +112,7 @@ def capture_and_process_image(window_name, img_count):
         if img is not None:
             # Create the folder, ensuring no error is raised if it already exists
             os.makedirs("screen_images", exist_ok=True)
-            cv2.imwrite(f"screen_images/{img_count}_{screen_title}.png", img)
+            cv2.imwrite(f"screen_images/{img_count%20}_{screen_title}.png", img)
     return img_count + 1
 
 
