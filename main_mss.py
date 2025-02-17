@@ -44,18 +44,38 @@ def toggle_vision():
 @contextmanager
 def gdi_resource_management(hwnd):
     # Acquire resources
-    hwnd_dc = win32gui.GetWindowDC(hwnd)
-    mfc_dc = win32ui.CreateDCFromHandle(hwnd_dc)
-    save_dc = mfc_dc.CreateCompatibleDC()
-    bitmap = win32ui.CreateBitmap()
+    hwnd_dc = None
+    mfc_dc = None
+    save_dc = None
+    bitmap = None
     try:
+        hwnd_dc = win32gui.GetWindowDC(hwnd)
+        if not hwnd_dc:
+            raise RuntimeError("Failed to get window DC")
+
+        mfc_dc = win32ui.CreateDCFromHandle(hwnd_dc)
+        save_dc = mfc_dc.CreateCompatibleDC()
+        
+        bitmap = win32ui.CreateBitmap()
+        # Retrieve window dimensions
+        rect = win32gui.GetClientRect(hwnd)
+        width, height = rect[2] - rect[0], rect[3] - rect[1]
+
+        # Create compatible bitmap
+        bitmap.CreateCompatibleBitmap(mfc_dc, width, height)
+        save_dc.SelectObject(bitmap)
+
         yield hwnd_dc, mfc_dc, save_dc, bitmap
     finally:
-        # Ensure resources are released
-        win32gui.DeleteObject(bitmap.GetHandle())
-        save_dc.DeleteDC()
-        mfc_dc.DeleteDC()
-        win32gui.ReleaseDC(hwnd, hwnd_dc)
+        # Ensure resources are released safely
+        if bitmap:
+            win32gui.DeleteObject(bitmap.GetHandle())
+        if save_dc:
+            save_dc.DeleteDC()
+        if mfc_dc:
+            mfc_dc.DeleteDC()
+        if hwnd_dc:
+            win32gui.ReleaseDC(hwnd, hwnd_dc)
 
 
 # Function to load configuration from the JSON file
