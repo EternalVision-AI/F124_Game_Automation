@@ -121,6 +121,7 @@ def capture_win_alt(window_name: str):
 
 def capture_and_process_image(window_name, img_count):
     img = capture_win_alt(window_name)
+    img = cv2.resize(img, (1920, 1080))
     if img is not None:
         extracted_text = pytesseract.image_to_string(preprocess_image(img), lang="eng")
         extracted_text = extracted_text.upper()
