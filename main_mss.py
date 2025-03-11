@@ -67,15 +67,29 @@ def gdi_resource_management(hwnd):
 
         yield hwnd_dc, mfc_dc, save_dc, bitmap
     finally:
-        # Ensure resources are released safely
-        if bitmap:
-            win32gui.DeleteObject(bitmap.GetHandle())
-        if save_dc:
-            save_dc.DeleteDC()
-        if mfc_dc:
-            mfc_dc.DeleteDC()
-        if hwnd_dc:
-            win32gui.ReleaseDC(hwnd, hwnd_dc)
+        try:    
+            if bitmap and bitmap.GetHandle():
+                win32gui.DeleteObject(bitmap.GetHandle())
+        except Exception as e:
+            print(f"Error deleting bitmap: {e}")
+
+        try:
+            if save_dc:
+                save_dc.DeleteDC()
+        except Exception as e:
+            print(f"Error deleting save_dc: {e}")
+
+        try:
+            if mfc_dc:
+                mfc_dc.DeleteDC()
+        except Exception as e:
+            print(f"Error deleting mfc_dc: {e}")
+
+        try:
+            if hwnd_dc:
+                win32gui.ReleaseDC(hwnd, hwnd_dc)
+        except Exception as e:
+            print(f"Error releasing hwnd_dc: {e}")
 
 
 # Function to load configuration from the JSON file
